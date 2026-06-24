@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>En Lee · PM Portfolio</title>
+<style>
+  :root {
+    --mint-bg: #F2FBF6;
+    --mint-accent: #1E8A5E;
+    --mint-light: #D4F0E2;
+    --text-primary: #1A2E25;
+    --text-secondary: #4A6B5A;
+    --text-muted: #7A9B8A;
+    --border: #C8E8D8;
+    --white: #FFFFFF;
+    --tag-bg: #E8F7EF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; background: var(--mint-bg); color: var(--text-primary); line-height: 1.6; }
+
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(242,251,246,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .nav-logo { font-size: 15px; font-weight: 600; color: var(--mint-accent); }
+  .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a { font-size: 13px; color: var(--text-secondary); text-decoration: none; }
+  .nav-links a:hover { color: var(--mint-accent); }
+  .lang-toggle {
+    display: flex; border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+  }
+  .lang-btn {
+    padding: 4px 14px; font-size: 12px; cursor: pointer; border: none;
+    background: transparent; color: var(--text-muted); font-weight: 500;
+    transition: all 0.15s;
+  }
+  .lang-btn.active { background: var(--mint-accent); color: white; }
+
+  .hero { max-width: 760px; margin: 0 auto; padding: 5rem 2rem 3rem; }
+  .hero-eyebrow { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--mint-accent); font-weight: 500; margin-bottom: 1rem; }
+  .hero-name { font-size: 42px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; }
+  .hero-subtitle { font-size: 18px; color: var(--text-secondary); margin-top: 0.5rem; }
+  .hero-desc { font-size: 15px; color: var(--text-secondary); margin-top: 1.25rem; max-width: 560px; line-height: 1.8; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.5rem; }
+  .tag { font-size: 12px; padding: 4px 12px; background: var(--tag-bg); color: var(--mint-accent); border: 1px solid var(--mint-light); border-radius: 20px; font-weight: 500; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--mint-accent); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .section { max-width: 760px; margin: 0 auto; padding: 3rem 2rem; }
+  .section-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--mint-accent); font-weight: 600; margin-bottom: 2rem; }
+
+  .case-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+    padding: 2rem; margin-bottom: 1.25rem; cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+  .case-card:hover { box-shadow: 0 4px 20px rgba(30,138,94,0.08); transform: translateY(-1px); }
+  .case-header { margin-bottom: 1rem; }
+  .case-company { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); font-weight: 500; }
+  .case-title { font-size: 19px; font-weight: 600; margin-bottom: 0.5rem; letter-spacing: -0.3px; }
+  .case-summary { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+  .case-metrics { display: flex; gap: 1.5rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+  .metric-num { font-size: 20px; font-weight: 700; color: var(--mint-accent); }
+  .metric-label { font-size: 11px; color: var(--text-muted); }
+  .case-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 1rem; }
+  .case-tag { font-size: 11px; padding: 3px 10px; background: var(--tag-bg); color: var(--text-secondary); border-radius: 20px; }
+
+  .detail-panel {
+    display: none; background: var(--mint-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem 2rem; margin-top: -0.5rem; margin-bottom: 1.25rem;
+  }
+  .detail-panel.open { display: block; }
+  .detail-section { margin-bottom: 1.25rem; }
+  .detail-section:last-child { margin-bottom: 0; }
+  .detail-heading { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--mint-accent); font-weight: 600; margin-bottom: 0.5rem; }
+  .detail-text { font-size: 14px; color: var(--text-secondary); line-height: 1.8; }
+  .detail-text ul { padding-left: 1.2rem; }
+  .detail-text li { margin-bottom: 0.25rem; }
+
+  .exp-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
+  .exp-row:last-child { border-bottom: none; }
+  .exp-company { font-size: 15px; font-weight: 600; }
+  .exp-role { font-size: 13px; color: var(--mint-accent); margin-top: 2px; }
+  .exp-right { font-size: 12px; color: var(--text-muted); text-align: right; white-space: nowrap; margin-left: 1rem; }
+
+  .contact-section {
+    background: var(--mint-accent); border-radius: 16px; padding: 2.5rem 2rem;
+    text-align: center; max-width: 760px; margin: 0 auto 3rem;
+  }
+  .contact-title { font-size: 22px; font-weight: 700; color: white; margin-bottom: 0.5rem; }
+  .contact-sub { font-size: 14px; color: rgba(255,255,255,0.75); margin-bottom: 1.5rem; }
+  .contact-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .contact-link { font-size: 13px; padding: 8px 20px; background: white; color: var(--mint-accent); border-radius: 20px; text-decoration: none; font-weight: 500; }
+
+  [data-lang] { display: none; }
+  body.zh [data-lang="zh"] { display: block; }
+  body.zh [data-lang="zh-inline"] { display: inline; }
+  body.zh [data-lang="en"] { display: none; }
+  body.en [data-lang="en"] { display: block; }
+  body.en [data-lang="en-inline"] { display: inline; }
+  body.en [data-lang="zh"] { display: none; }
+  span[data-lang] { display: none; }
+  body.zh span[data-lang="zh"] { display: inline; }
+  body.en span[data-lang="en"] { display: inline; }
+</style>
+</head>
+<body class="zh">
+
+<nav class="nav">
+  <div class="nav-logo">En Lee · PM Portfolio</div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#cases"><span data-lang="zh">案例</span><span data-lang="en">Cases</span></a>
+      <a href="#experience"><span data-lang="zh">經歷</span><span data-lang="en">Experience</span></a>
+      <a href="#contact"><span data-lang="zh">聯絡</span><span data-lang="en">Contact</span></a>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Product Manager · Platform &amp; Growth</div>
+  <div class="hero-name">李恩 · En Lee</div>
+  <div class="hero-subtitle">
+    <span data-lang="zh">產品經理</span>
+    <span data-lang="en">Product Manager</span>
+  </div>
+  <div class="hero-desc">
+    <span data-lang="zh">5 年產品經理經驗，橫跨 iGaming、FinTech 與訂閱平台。擅長以數據驅動決策，整合 AI 能力與使用者行為洞察，打造兼顧留存、獲客與營運效率的產品機制。</span>
+    <span data-lang="en">5+ years as a Product Manager across iGaming, FinTech, and subscription platforms. Skilled at data-driven decision making, integrating AI capabilities, and designing product mechanisms that balance retention, acquisition, and operational efficiency.</span>
+  </div>
+  <div class="hero-tags">
+    <span class="tag">User Growth</span>
+    <span class="tag"><span data-lang="zh">AI 應用</span><span data-lang="en">AI Integration</span></span>
+    <span class="tag"><span data-lang="zh">留存設計</span><span data-lang="en">Retention Design</span></span>
+    <span class="tag"><span data-lang="zh">遊戲化</span><span data-lang="en">Gamification</span></span>
+    <span class="tag"><span data-lang="zh">跨產品整合</span><span data-lang="en">Cross-product</span></span>
+    <span class="tag"><span data-lang="zh">風控自動化</span><span data-lang="en">Risk Automation</span></span>
+  </div>
+  <div class="hero-stats">
+    <div><div class="stat-num">5+</div><div class="stat-label"><span data-lang="zh">年產品經驗</span><span data-lang="en">Years in PM</span></div></div>
+    <div><div class="stat-num">3</div><div class="stat-label"><span data-lang="zh">產業縱深</span><span data-lang="en">Industries</span></div></div>
+    <div><div class="stat-num">8</div><div class="stat-label"><span data-lang="zh">核心產品案例</span><span data-lang="en">Product Cases</span></div></div>
+  </div>
+</div>
+
+<div class="section" id="cases">
+  <div class="section-label"><span data-lang="zh">產品案例</span><span data-lang="en">Product Cases</span></div>
+
+  <!-- VIP -->
+  <div class="case-card" onclick="toggle('vip')">
+    <div class="case-header"><div class="case-company">Titansoft · SBOTOP</div></div>
+    <div class="case-title">
+      <span data-lang="zh">VIP 分層系統——從零到一建立留存機制</span>
+      <span data-lang="en">VIP Tier System — Building Retention from Scratch</span>
+    </div>
+    <div class="case-summary">
+      <span data-lang="zh">高價值用戶流失至競品，平台缺乏差異化留存手段。設計跨產品線、多國家的 VIP 分層機制，以數據說服營運團隊接受自動化。</span>
+      <span data-lang="en">High-value users were churning to competitors with no differentiated retention in place. Designed a multi-country, cross-product VIP tier system and used data to win over skeptical ops teams.</span>
+    </div>
+    <div class="case-tags">
+      <span class="case-tag"><span data-lang="zh">留存設計</span><span data-lang="en">Retention Design</span></span>
+      <span class="case-tag"><span data-lang="zh">跨團隊影響力</span><span data-lang="en">Stakeholder Management</span></span>
+      <span class="case-tag"><span data-lang="zh">多市場</span><span data-lang="en">Multi-market</span></span>
+    </div>
+    <div class="case-metrics">
+      <div><div class="metric-num">+18%</div><div class="metric-label"><span data-lang="zh">VIP 用戶留存率（3個月同群對比）</span><span data-lang="en">VIP retention (3-month cohort)</span></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-vip">
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">問題</span><span data-lang="en">Problem</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">高價值用戶因缺乏差異化對待而流失至競品，老客戶抱怨並離開，平台沒有任何正式的留存與獎勵機制。</span>
+        <span data-lang="en">High-value users churned to competitors due to lack of differentiated treatment. Long-time users complained and left. The platform had no formal retention or reward mechanism in place.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">做法</span><span data-lang="en">Approach</span></div>
+      <div class="detail-text">
+        <span data-lang="zh"><ul>
+          <li>分析競品 VIP 機制，交叉比對自家用戶在 Sports / Casino / Slots 三條產品線的下注行為</li>
+          <li>以每週下注量為核心分層指標，針對不同國家、不同產品線設計獨立級距邏輯</li>
+          <li>上線前每週提供「預估 VIP 用戶表現報表」，預測給予專屬優惠帶來的下注與儲值提升，逐步建立營運團隊對自動化的信任</li>
+        </ul></span>
+        <span data-lang="en"><ul>
+          <li>Benchmarked competitor VIP programs and cross-analyzed user betting behavior across Sports, Casino, and Slots product lines</li>
+          <li>Used weekly betting volume as the core tiering metric, designing country-specific and product-specific tier logic</li>
+          <li>Built weekly "projected VIP performance" reports pre-launch to demonstrate expected uplift and earn ops team buy-in on automation</li>
+        </ul></span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">挑戰</span><span data-lang="en">Challenge</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">多國家 × 多產品線的商業邏輯極度複雜；營運團隊初期抗拒自動化，需先用數據說服再推進系統。上線後短期內用戶大量詢問機制細節，後以 FAQ 與站內說明解決。</span>
+        <span data-lang="en">Business logic was highly complex across multiple countries and product lines. The ops team initially resisted automation — data-driven persuasion was needed before any system could move forward. Post-launch, a spike in user inquiries added short-term workload, resolved by deploying in-product FAQs.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">成果</span><span data-lang="en">Outcome</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">同群 VIP 用戶前後對比（3 個月週期），留存率提升 18%。</span>
+        <span data-lang="en">Retention rate increased by 18% among the same VIP user cohort over a 3-month comparison window.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Churn -->
+  <div class="case-card" onclick="toggle('churn')">
+    <div class="case-header"><div class="case-company">Titansoft · SBOTOP</div></div>
+    <div class="case-title">
+      <span data-lang="zh">AI Churn Prediction——將流失預測整合進 CRM</span>
+      <span data-lang="en">AI Churn Prediction — Integrating Behavioral Models into CRM</span>
+    </div>
+    <div class="case-summary">
+      <span data-lang="zh">CRM 靠人工判斷流失風險，效率低、覆蓋不完整。主導自建 AI 模型需求定義，設計雙軌自動介入機制，以 A/B test 驗證效果。</span>
+      <span data-lang="en">CRM team relied on manual judgment to identify churn risk — inefficient and incomplete. Led requirement definition for an in-house AI model and designed a dual-track auto-intervention system, validated by A/B test.</span>
+    </div>
+    <div class="case-tags">
+      <span class="case-tag">AI</span>
+      <span class="case-tag">CRM</span>
+      <span class="case-tag">A/B Test</span>
+    </div>
+    <div class="case-metrics">
+      <div><div class="metric-num">+20%</div><div class="metric-label"><span data-lang="zh">用戶留存率（A/B test 驗證）</span><span data-lang="en">User retention (A/B validated)</span></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-churn">
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">問題</span><span data-lang="en">Problem</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">CRM 團隊靠人工判斷流失風險，效率低、覆蓋不完整，高價值用戶在缺乏即時介入的情況下悄悄離開。</span>
+        <span data-lang="en">The CRM team relied on manual risk assessment, leaving gaps in coverage. High-value users quietly churned without timely intervention.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">做法</span><span data-lang="en">Approach</span></div>
+      <div class="detail-text">
+        <span data-lang="zh"><ul>
+          <li>作為 PM 定義模型需求，整合營運業務邏輯與 Data team 技術能力，協助建立自有 AI churn prediction 模型</li>
+          <li>設計雙軌觸發機制：自動發送優惠券（高風險用戶即時挽留）＋生成清單通知營運人員手動跟進</li>
+          <li>上線前三個月在特定市場對 50% 用戶進行 A/B test</li>
+        </ul></span>
+        <span data-lang="en"><ul>
+          <li>Defined model requirements as PM, bridging ops business logic and Data team's technical capabilities to build an in-house AI churn prediction model</li>
+          <li>Designed a dual-track trigger system: auto-send vouchers for high-risk users + generate watch-lists for ops to manually follow up on high-value users</li>
+          <li>Ran a 3-month A/B test on 50% of users in a target market pre-launch</li>
+        </ul></span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">成果</span><span data-lang="en">Outcome</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">A/B test 驗證：AI 介入組用戶留存提升 20%（對照組同期數據）。</span>
+        <span data-lang="en">A/B test confirmed: the AI-intervention group showed 20% higher retention vs. the control group over the same period.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referral -->
+  <div class="case-card" onclick="toggle('referral')">
+    <div class="case-header"><div class="case-company">Titansoft · SBOTOP</div></div>
+    <div class="case-title">
+      <span data-lang="zh">雙層 Referral 機制——P2P 病毒式獲客</span>
+      <span data-lang="en">Two-tier Referral System — P2P Viral Acquisition</span>
+    </div>
+    <div class="case-summary">
+      <span data-lang="zh">新用戶幾乎全靠廣告投放，CAC 高且缺乏有機成長。設計類直銷雙層抽佣結構，結合 AI 風控 API 防止套利，驅動有機成長。</span>
+      <span data-lang="en">Nearly all new users came from paid channels — high CAC, no organic growth. Designed a two-tier commission referral structure with AI-powered duplicate detection to drive organic acquisition.</span>
+    </div>
+    <div class="case-tags">
+      <span class="case-tag"><span data-lang="zh">獲客設計</span><span data-lang="en">Acquisition</span></span>
+      <span class="case-tag"><span data-lang="zh">激勵機制</span><span data-lang="en">Incentive Design</span></span>
+      <span class="case-tag"><span data-lang="zh">風控整合</span><span data-lang="en">Risk Integration</span></span>
+    </div>
+    <div class="case-metrics">
+      <div><div class="metric-num">+5%</div><div class="metric-label"><span data-lang="zh">註冊後首次下注轉換率</span><span data-lang="en">Post-registration first-bet conversion</span></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-referral">
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">問題</span><span data-lang="en">Problem</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">新用戶幾乎全靠行銷渠道獲取，CAC 高且缺乏有機成長動能，註冊後到首次下注的轉換率偏低。</span>
+        <span data-lang="en">New users were almost entirely sourced from paid marketing channels with high CAC and no organic growth engine. Post-registration to first-bet conversion was low.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">做法</span><span data-lang="en">Approach</span></div>
+      <div class="detail-text">
+        <span data-lang="zh"><ul>
+          <li>設計雙層抽佣 Referral 機制：A 推薦 B，B 儲值越多 A 佣金越高；B 再推薦 C，A 同時獲得第二層 bonus</li>
+          <li>結合 AI 團隊開發的 Duplicate User Checking API（個人資料 + 行為模式 + IP 三層比對），確保獎勵不被重複帳號套利</li>
+        </ul></span>
+        <span data-lang="en"><ul>
+          <li>Designed a two-tier commission structure: A refers B, A earns more as B deposits more; B refers C, A also earns a second-tier bonus</li>
+          <li>Integrated the AI team's Duplicate User Checking API (personal info + behavior patterns + IP) to prevent bonus abuse via duplicate accounts</li>
+        </ul></span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">成果</span><span data-lang="en">Outcome</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">註冊後首次下注轉換率提升 5%。</span>
+        <span data-lang="en">Post-registration to first-bet conversion rate increased by 5%.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Mission -->
+  <div class="case-card" onclick="toggle('mission')">
+    <div class="case-header"><div class="case-company">Titansoft · SBOTOP</div></div>
+    <div class="case-title">
+      <span data-lang="zh">每日任務系統——驅動跨產品參與</span>
+      <span data-lang="en">Daily Mission System — Driving Cross-product Engagement</span>
+    </div>
+    <div class="case-summary">
+      <span data-lang="zh">用戶黏著在單一產品線，Casino 與 Games 自然導流不足。設計低門檻、20 天週期的跨產品每日任務，以優惠券為獎勵驅動回訪。</span>
+      <span data-lang="en">Users were siloed in a single product line with insufficient cross-traffic to Casino and Games. Designed low-friction daily quests across product lines with a 20-day engagement cycle.</span>
+    </div>
+    <div class="case-tags">
+      <span class="case-tag"><span data-lang="zh">遊戲化</span><span data-lang="en">Gamification</span></span>
+      <span class="case-tag"><span data-lang="zh">跨產品整合</span><span data-lang="en">Cross-product</span></span>
+      <span class="case-tag"><span data-lang="zh">行為設計</span><span data-lang="en">Behavior Design</span></span>
+    </div>
+    <div class="case-metrics">
+      <div><div class="metric-num">+15%</div><div class="metric-label"><span data-lang="zh">下注率（開啟 vs 未開啟任務用戶對比）</span><span data-lang="en">Betting rate (quest users vs. non-users)</span></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-mission">
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">問題</span><span data-lang="en">Problem</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">用戶黏著在單一產品線（主要是 Sports），跨產品使用率低，Casino 與 Games 缺乏自然導流。</span>
+        <span data-lang="en">Users were heavily concentrated in Sports, with low cross-product usage. Casino and Games lacked natural traffic flow from other verticals.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">做法</span><span data-lang="en">Approach</span></div>
+      <div class="detail-text">
+        <span data-lang="zh"><ul>
+          <li>設計跨產品線每日任務——難度刻意壓低，每天輪替 Sports / Casino / Games，讓用戶在不感到壓力的情況下接觸其他產品</li>
+          <li>設計 20 天連續任務週期，以優惠券作為完成獎勵，維持每日回訪動機</li>
+        </ul></span>
+        <span data-lang="en"><ul>
+          <li>Designed cross-product daily quests with intentionally low difficulty, rotating daily across Sports, Casino, and Games to nudge users into new verticals without friction</li>
+          <li>Built a 20-day quest cycle with voucher rewards on completion to maintain daily return motivation</li>
+        </ul></span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">成果</span><span data-lang="en">Outcome</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">開啟任務用戶的下注率比未開啟用戶高 15%，跨產品參與顯著提升。</span>
+        <span data-lang="en">Quest users showed 15% higher betting rates vs. non-users, with significant improvement in cross-product engagement.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Euro Cup -->
+  <div class="case-card" onclick="toggle('euro')">
+    <div class="case-header"><div class="case-company">Titansoft · SBOTOP</div></div>
+    <div class="case-title">
+      <span data-lang="zh">Euro Cup 活動——整合預熱設計提升賽後留存</span>
+      <span data-lang="en">Euro Cup Campaign — Pre-event Warm-up to Improve Post-event Retention</span>
+    </div>
+    <div class="case-summary">
+      <span data-lang="zh">大型賽事流量集中爆發，活動結束後新戶快速流失。設計賽前 2 個月預測遊戲預熱機制，整合四條產品線統一 Landing Page。</span>
+      <span data-lang="en">Major event traffic spiked during the tournament but new users churned quickly afterward. Designed a 2-month pre-event prediction game warm-up with a unified landing page across four product lines.</span>
+    </div>
+    <div class="case-tags">
+      <span class="case-tag"><span data-lang="zh">大型活動</span><span data-lang="en">Event Campaign</span></span>
+      <span class="case-tag"><span data-lang="zh">預熱設計</span><span data-lang="en">Warm-up Design</span></span>
+      <span class="case-tag"><span data-lang="zh">跨產品整合</span><span data-lang="en">Cross-product</span></span>
+    </div>
+    <div class="case-metrics">
+      <div><div class="metric-num">+5%</div><div class="metric-label"><span data-lang="zh">活動期間用戶數（vs 上屆）</span><span data-lang="en">Active users during event (vs. prior edition)</span></div></div>
+      <div><div class="metric-num">+10%</div><div class="metric-label"><span data-lang="zh">新戶活動後留存率（vs 上屆）</span><span data-lang="en">Post-event new user retention (vs. prior edition)</span></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-euro">
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">問題</span><span data-lang="en">Problem</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">大型賽事期間各產品線各自為政，用戶體驗分散；缺乏賽前預熱機制，流量集中在賽事期間爆發，活動結束後新戶流失嚴重。</span>
+        <span data-lang="en">Product lines operated independently during major events, creating a fragmented user experience. Without pre-event engagement, traffic peaked only during the tournament and new users churned heavily afterward.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">做法</span><span data-lang="en">Approach</span></div>
+      <div class="detail-text">
+        <span data-lang="zh"><ul>
+          <li>建立統一 Landing Page，整合 Sports / Casino / Slots / Games 四條產品線，作為單一廣告入口</li>
+          <li>賽事開始前 2 個月上線 Prediction Game：玩家從小組賽預測到決賽，預測成功可兌現獎勵——但前提是提早在 Sports 頁面下注，驅動賽前投注行為</li>
+          <li>協調技術團隊確保系統架構能承載高併發流量</li>
+        </ul></span>
+        <span data-lang="en"><ul>
+          <li>Built a unified landing page integrating Sports, Casino, Slots, and Games as a single ad destination</li>
+          <li>Launched a Prediction Game 2 months before the tournament: players predicted match results from group stage to final; correct predictions could be redeemed — but only if they placed early bets on the Sports page, driving pre-event betting behavior</li>
+          <li>Coordinated with engineering to ensure system architecture could handle high-concurrency traffic during the event</li>
+        </ul></span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">成果</span><span data-lang="en">Outcome</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">活動期間用戶數相比上屆 Euro Cup 成長 5%；活動結束後新戶留存率提升 10%，說明預熱機制有效提升黏著度。</span>
+        <span data-lang="en">Active users during the event grew 5% vs. the previous Euro Cup edition. Post-event new user retention improved by 10%, demonstrating that the warm-up mechanism effectively built lasting engagement.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk -->
+  <div class="case-card" onclick="toggle('risk')">
+    <div class="case-header"><div class="case-company">Titansoft · SBOTOP</div></div>
+    <div class="case-title">
+      <span data-lang="zh">AI 風險預測系統——自動化異常行為偵測</span>
+      <span data-lang="en">AI Risk Prediction System — Automating Anomaly Detection</span>
+    </div>
+    <div class="case-summary">
+      <span data-lang="zh">5 人團隊每天花 10 小時人工審查套利、洗錢、帳號共用。主導偵測規則定義，協調 AI team 與合規團隊，將審核流程自動化。</span>
+      <span data-lang="en">A 5-person team spent 10 hours daily on manual review of arbitrage, money laundering, and shared accounts. Led detection rule definition and coordinated AI and compliance teams to automate the workflow.</span>
+    </div>
+    <div class="case-tags">
+      <span class="case-tag"><span data-lang="zh">AI 風控</span><span data-lang="en">AI Risk Control</span></span>
+      <span class="case-tag"><span data-lang="zh">流程自動化</span><span data-lang="en">Process Automation</span></span>
+      <span class="case-tag"><span data-lang="zh">合規</span><span data-lang="en">Compliance</span></span>
+    </div>
+    <div class="case-metrics">
+      <div><div class="metric-num">-50%</div><div class="metric-label"><span data-lang="zh">人工審核時間</span><span data-lang="en">Manual review time</span></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-risk">
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">問題</span><span data-lang="en">Problem</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">5 人團隊每天耗費 10 小時人工審查異常行為（套利、洗錢、帳號共用），效率極低且難以規模化。</span>
+        <span data-lang="en">A 5-person team spent 10 hours per day manually reviewing anomalous behavior including arbitrage, money laundering, and account sharing — highly inefficient and impossible to scale.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">做法</span><span data-lang="en">Approach</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">定義三類異常行為的偵測規則，協調 AI team 建模 + 合規團隊驗證規則邊界，將偵測與審核流程自動化。</span>
+        <span data-lang="en">Defined detection rules for three categories of anomalous behavior, coordinated AI team modeling and compliance team rule validation, and automated the detection and review workflow end-to-end.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">成果</span><span data-lang="en">Outcome</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">人工審核時間減少 50%，同等人力下覆蓋更多異常案例。</span>
+        <span data-lang="en">Manual review time reduced by 50%, with the same team now covering significantly more anomaly cases.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Atome -->
+  <div class="case-card" onclick="toggle('atome')">
+    <div class="case-header"><div class="case-company">Advance Intelligence Group · Atome</div></div>
+    <div class="case-title">
+      <span data-lang="zh">BNPL 台灣市場成長——本地化 + 地推規模化</span>
+      <span data-lang="en">BNPL Taiwan Growth — Localization + Field Team Scale-up</span>
+    </div>
+    <div class="case-summary">
+      <span data-lang="zh">台灣用戶在 KYC 驗證步驟大量流失，GMV 成長受限。現場觀察發現設計不符台灣習慣，並從零組建 100+ 人地推團隊。</span>
+      <span data-lang="en">Taiwan users churned heavily at the KYC verification step, limiting GMV growth. Field observation identified a localization mismatch, and built a 100+ person field promotion team from scratch.</span>
+    </div>
+    <div class="case-tags">
+      <span class="case-tag"><span data-lang="zh">本地化</span><span data-lang="en">Localization</span></span>
+      <span class="case-tag"><span data-lang="zh">用戶研究</span><span data-lang="en">User Research</span></span>
+      <span class="case-tag"><span data-lang="zh">地推規模化</span><span data-lang="en">Field Ops Scale</span></span>
+    </div>
+    <div class="case-metrics">
+      <div><div class="metric-num">+15%</div><div class="metric-label"><span data-lang="zh">KYC 完成率</span><span data-lang="en">KYC completion rate</span></div></div>
+      <div><div class="metric-num">+30%</div><div class="metric-label"><span data-lang="zh">新用戶訂單</span><span data-lang="en">New user orders</span></div></div>
+      <div><div class="metric-num">+60%</div><div class="metric-label"><span data-lang="zh">整體 GMV</span><span data-lang="en">Overall GMV</span></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-atome">
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">問題</span><span data-lang="en">Problem</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">台灣市場 KYC 完成率低，用戶在證件驗證步驟大量流失；平台缺乏系統性的地推能量，GMV 成長受限。</span>
+        <span data-lang="en">KYC completion rates in Taiwan were low, with users dropping off at the ID verification step. The platform lacked a systematic field presence, capping GMV growth.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">做法</span><span data-lang="en">Approach</span></div>
+      <div class="detail-text">
+        <span data-lang="zh"><ul>
+          <li>現場觀察用戶操作，發現 KYC 流程要求護照或駕照，不符台灣用戶習慣，針對台灣市場做本地化調整</li>
+          <li>根據用戶回饋持續迭代，以數據驅動產品優化</li>
+          <li>與獵頭公司合作招募 100+ 人地推團隊，設計完整 SOP 與商家培訓框架後交付執行，持續追蹤成效</li>
+        </ul></span>
+        <span data-lang="en"><ul>
+          <li>Conducted field observation of user sessions and discovered the KYC flow required a passport or driver's license — misaligned with Taiwan user habits. Led Taiwan-specific localization of the flow</li>
+          <li>Iterated based on ongoing user feedback using a data-driven optimization approach</li>
+          <li>Recruited a 100+ person field promotion team via headhunters, designed end-to-end SOPs and merchant training frameworks, and tracked performance post-handoff</li>
+        </ul></span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">成果</span><span data-lang="en">Outcome</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">KYC 完成率提升 15%、新用戶訂單成長 30%、整體 GMV 提升 60%。</span>
+        <span data-lang="en">KYC completion rate improved by 15%, new user orders grew 30%, and overall GMV increased by 60%.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pressplay -->
+  <div class="case-card" onclick="toggle('pressplay')">
+    <div class="case-header"><div class="case-company">Pressplay · PPA Academy</div></div>
+    <div class="case-title">
+      <span data-lang="zh">訂閱學習平台遊戲化——建立每日回訪習慣</span>
+      <span data-lang="en">Subscription Learning Platform Gamification — Building Daily Return Habits</span>
+    </div>
+    <div class="case-summary">
+      <span data-lang="zh">用戶完課率低、續購率不足，缺乏每日回訪動機。落地執行每日簽到、課程 Quiz、幸運抽獎三件套遊戲化機制。</span>
+      <span data-lang="en">Course completion and renewal rates were low with no daily return motivation. Executed a three-part gamification system: daily check-in, course quizzes, and lucky draws.</span>
+    </div>
+    <div class="case-tags">
+      <span class="case-tag"><span data-lang="zh">遊戲化</span><span data-lang="en">Gamification</span></span>
+      <span class="case-tag"><span data-lang="zh">訂閱留存</span><span data-lang="en">Subscription Retention</span></span>
+      <span class="case-tag"><span data-lang="zh">執行落地</span><span data-lang="en">Execution</span></span>
+    </div>
+    <div class="case-metrics">
+      <div><div class="metric-num">+10%</div><div class="metric-label"><span data-lang="zh">每日登入用戶數（上線前後對比）</span><span data-lang="en">Daily active users (pre vs. post launch)</span></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-pressplay">
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">問題</span><span data-lang="en">Problem</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">用戶完課率低、續購率不足，平台缺乏讓用戶養成每日回訪習慣的機制。</span>
+        <span data-lang="en">Course completion and subscription renewal rates were low. The platform lacked a mechanism to build daily return habits among users.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">做法</span><span data-lang="en">Approach</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">承接遊戲化策略方向，負責落地執行每日登入簽到、課程內嵌 Quiz 挑戰、每日幸運抽獎——以低門檻每日任務驅動用戶建立學習習慣。</span>
+        <span data-lang="en">Took ownership of executing the gamification strategy direction: daily login check-in, course-integrated quiz challenges, and daily lucky draws — using low-friction daily tasks to build consistent learning habits.</span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-heading"><span data-lang="zh">成果</span><span data-lang="en">Outcome</span></div>
+      <div class="detail-text">
+        <span data-lang="zh">每日登入用戶數上線前後對比提升 10%。</span>
+        <span data-lang="en">Daily active users increased by 10% comparing pre- and post-launch periods.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="experience">
+  <div class="section-label"><span data-lang="zh">工作經歷</span><span data-lang="en">Experience</span></div>
+  <div class="exp-row">
+    <div class="exp-left">
+      <div class="exp-company">Pressplay · PPA Academy</div>
+      <div class="exp-role">Product Manager, Platform and User Growth</div>
+    </div>
+    <div class="exp-right"><span data-lang="zh">台北</span><span data-lang="en">Taipei</span> · 2025/09–2025/12</div>
+  </div>
+  <div class="exp-row">
+    <div class="exp-left">
+      <div class="exp-company">Titansoft · SBOTOP</div>
+      <div class="exp-role">Product Owner, Platform and User Growth</div>
+    </div>
+    <div class="exp-right"><span data-lang="zh">台北</span><span data-lang="en">Taipei</span> · 2022/12–2025/04</div>
+  </div>
+  <div class="exp-row">
+    <div class="exp-left">
+      <div class="exp-company">Advance Intelligence Group · Atome</div>
+      <div class="exp-role">Product Operations Manager, BNPL</div>
+    </div>
+    <div class="exp-right"><span data-lang="zh">台北</span><span data-lang="en">Taipei</span> · 2021/12–2022/09</div>
+  </div>
+  <div class="exp-row">
+    <div class="exp-left">
+      <div class="exp-company">OneForAll Public Relations</div>
+      <div class="exp-role">Account Supervisor, Corporate & Marketing Communications</div>
+    </div>
+    <div class="exp-right"><span data-lang="zh">台北</span><span data-lang="en">Taipei</span> · 2017/05–2021/10</div>
+  </div>
+</div>
+
+<div class="contact-section" id="contact">
+  <div class="contact-title">
+    <span data-lang="zh">準備好聊了嗎？</span>
+    <span data-lang="en">Let's talk.</span>
+  </div>
+  <div class="contact-sub">
+    <span data-lang="zh">歡迎討論產品職位或合作機會</span>
+    <span data-lang="en">Open to product roles and collaboration opportunities</span>
+  </div>
+  <div class="contact-links">
+    <a class="contact-link" href="mailto:enyalee.studio@gmail.com">enyalee.studio@gmail.com</a>
+    <a class="contact-link" href="tel:0956300328">0956-300328</a>
+  </div>
+</div>
+
+<script>
+function setLang(lang) {
+  document.body.className = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+}
+function toggle(id) {
+  const panel = document.getElementById('detail-' + id);
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('open'));
+  if (!isOpen) panel.classList.add('open');
+}
+</script>
+</body>
+</html>
